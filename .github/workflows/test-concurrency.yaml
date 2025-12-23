@@ -42,3 +42,13 @@ jobs:
         run: |
           echo "Cleanup Job 2 due to cancellation..."
           # Your success cleanup commands here
+
+  cleanup-job-3:
+    needs: main-job
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Cleanup task 3
+        run: |
+          echo "Cleanup Job 3 always..."
+          # Your success cleanup commands here
