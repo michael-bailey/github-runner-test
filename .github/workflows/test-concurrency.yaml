@@ -1,0 +1,44 @@
+name: Test Concurrency
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - labeled
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  main-job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Main work
+        run: |
+          echo "Starting main work..."
+          echo "Please cancel this job by triggering a new one."
+          sleep 60
+          echo "Main work completed"
+
+  cleanup-job-1:
+    needs: main-job
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: Cleanup task 1
+        if: success()
+        run: |
+          echo "Cleanup Job 1 due to success..."
+          # Your success cleanup commands here
+
+  cleanup-job-2:
+    needs: main-job
+    runs-on: ubuntu-latest
+    if: cancelled()
+    steps:
+      - name: Cleanup task 2
+        run: |
+          echo "Cleanup Job 2 due to cancellation..."
+          # Your success cleanup commands here
